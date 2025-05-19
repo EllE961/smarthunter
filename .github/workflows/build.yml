@@ -1,0 +1,22 @@
+name: Build Python package
+
+on:
+  push: # build on every push to main
+    branches: [main]
+  workflow_dispatch: # …or manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # 1. pull code
+      - uses: actions/setup-python@v5 # 2. choose Python
+        with:
+          python-version: "3.x"
+      - run: python -m pip install --upgrade build
+      - run: python -m build # 3. create wheel & sdist
+      # 4. store the artefacts so you can download them
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels
+          path: dist/*

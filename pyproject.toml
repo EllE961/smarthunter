@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61", "wheel"]
+requires = ["setuptools>=69.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -11,7 +11,7 @@ requires-python = ">=3.9"
 license     = {text = "MIT"}
 authors     = [{name = "EllE", email = "yahyaalsalmi961@gmail.com"}]
 keywords    = ["CTF", "reverse-engineering", "strings", "security"]
-classifiers = [               # at least *one* “Programming Language” line
+classifiers = [               # at least *one* "Programming Language" line
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
@@ -27,5 +27,17 @@ dependencies = [
   "tqdm>=4.0"
 ]
 
-[project.scripts]             # ← gives the 1-word CLI
+[project.optional-dependencies]
+dev = [
+  "black>=23.0",
+  "flake8>=6.0",
+  "pytest>=7.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/ellE961/smarthunter"
+Source = "https://github.com/ellE961/smarthunter"
+Tracker = "https://github.com/ellE961/smarthunter/issues"
+
+[project.scripts]
 smarthunter = "smarthunter.__main__:main"
