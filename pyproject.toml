@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name        = "smarthunter"                 # ⚠ unique on PyPI
-version     = "0.3.0"                       # bump every release
+version     = "0.3.1"                       # bump every release
 description = "CTF-grade smart string miner that decodes, clusters, scores and HTML-reports"
 readme      = "README.md"
 requires-python = ">=3.9"

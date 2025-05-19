@@ -21,7 +21,8 @@ def compression_dec(s:str):
     
     for label,decomp in MAGICS.values():
         src=raw if raw and raw.startswith(label.encode() if isinstance(label,str) else label) else None
-        if not src and s.encode().startswith(label): src=s.encode()
+        if not src and s.encode().startswith(label.encode() if isinstance(label,str) else label): 
+            src=s.encode()
         if src:
             try: outs.append((f"{label.decode() if isinstance(label,bytes) else label}", decomp(src).decode('utf-8','ignore')))
             except: pass
