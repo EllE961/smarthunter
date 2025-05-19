@@ -1,7 +1,7 @@
 # SmartHunter 🔍
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI version](https://img.shields.io/badge/pypi-v0.1.1-blue.svg)](https://pypi.org/project/smarthunter/)
+[![PyPI version](https://img.shields.io/badge/pypi-v1.0.0-blue.svg)](https://pypi.org/project/smarthunter/)
 [![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11-blue)](https://pypi.org/project/smarthunter/)
 
 **SmartHunter** is a high-performance tool designed to scan binaries, firmware, and any byte source for hidden strings and flags in multiple encoding formats. Built with CTF competitions and security research in mind, it features intelligent string detection, automatic flag pattern recognition, and scoring mechanisms.
@@ -15,6 +15,7 @@
 ## ✨ Features
 
 - **Multi-Encoding Support**: Detect strings in 13 different encoding formats:
+
   - Base64 (Standard and URL-safe)
   - Base32
   - Base85
@@ -29,12 +30,14 @@
   - Cleartext (ASCII)
 
 - **Smart Detection**:
+
   - Confidence scoring algorithm
   - Automatic flag pattern boosting (`flag{}`, `CTF{}`, etc.)
   - Deduplication of results
   - Configurable thresholds
 
 - **Performance Optimized**:
+
   - Efficient regular expressions
   - Fast byte manipulation
   - Memory-mapped file access for large binaries
@@ -84,13 +87,13 @@ smarthunter sample.bin --out results.json
 
 ### Command-Line Options
 
-| Option | Description |
-|--------|-------------|
-| `--clean` | Show only high-confidence results (score >= 0.8) |
-| `--threshold FLOAT` | Set minimum confidence score (0.0-1.0) |
-| `--min INT` | Minimum length of decoded string (default: 4) |
-| `--max INT` | Maximum length of decoded string (default: 120) |
-| `--out FILE` | Save results to JSON file |
+| Option              | Description                                      |
+| ------------------- | ------------------------------------------------ |
+| `--clean`           | Show only high-confidence results (score >= 0.8) |
+| `--threshold FLOAT` | Set minimum confidence score (0.0-1.0)           |
+| `--min INT`         | Minimum length of decoded string (default: 4)    |
+| `--max INT`         | Maximum length of decoded string (default: 120)  |
+| `--out FILE`        | Save results to JSON file                        |
 
 ## 💻 Python API
 
@@ -107,7 +110,7 @@ for result in results:
     print(f"Found at 0x{result['offset']:08x}: {result['text']}")
     print(f"  Encoding: {result['codec']}")
     print(f"  Confidence: {result['score']:.2f}")
-    
+
 # Filter by confidence score
 high_confidence = [r for r in results if r['score'] >= 0.8]
 
@@ -174,4 +177,4 @@ Contributions are welcome! Feel free to:
 
 ---
 
-Made with ❤️ for security researchers and CTF players 
+Made with ❤️ for security researchers and CTF players
