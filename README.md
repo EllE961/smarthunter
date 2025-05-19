@@ -1,125 +1,219 @@
 # Smart-Strings Hunter
 
-A powerful, easy-to-use binary string extraction and analysis tool designed for CTF challenges.
+<p align="center">
+  <img src="https://img.shields.io/badge/version-0.2.0-blue.svg" alt="Version 0.2.0">
+  <img src="https://img.shields.io/badge/python-3.9%2B-green.svg" alt="Python 3.9+">
+  <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg" alt="License: MIT">
+</p>
 
-* **ASCII + UTF-16 + raw-section extraction**
-* **BK-tree Levenshtein clustering** (fast even on 50k+ strings)
-* **Flag heuristics + entropy/rarity scoring**
-* **Beautiful searchable HTML report** that auto-opens
-* **Built-in JSON export** for scripting
+**Smart-Strings Hunter** is a powerful binary string analysis tool designed for CTF challenges, reverse engineering, and forensic analysis. It goes far beyond standard string extraction tools by automatically decoding various encodings, clustering similar strings, detecting patterns, and generating interactive HTML reports.
 
-## Quick Install (60s)
+## ✨ Key Features
 
-```bash
-# Best: user-level, isolated
-python -m pip install --upgrade pip pipx
-pipx install "smarthunter @ git+https://github.com/ellE961/smarthunter.git"
-```
+- **Multi-format string extraction and decoding**
+  - ASCII, UTF-16, Base64, Hex, and [15+ more encodings](#supported-formats)
+  - Recursive decoding with configurable depth
+  - Automatically tries various decoders and ciphers
 
-*No `pipx`? Just `python -m pip install smarthunter` in a venv.*
+- **Intelligent pattern recognition**
+  - Flags, credentials, email addresses, URLs, IP addresses
+  - Cryptocurrency addresses (BTC, ETH)
+  - Hashes, UUIDs, and other identifiers
 
-Dependencies are auto-pulled: `python-Levenshtein`, `jinja2`, `rich`, `tqdm`.
+- **Advanced clustering and scoring**
+  - Fast BK-tree Levenshtein clustering (handles 100k+ strings)
+  - Multi-factor scoring (entropy, patterns, rarity, length)
+  - One-click collapsible duplicates
 
-## One-Command Usage
+- **Beautiful interactive reports**
+  - Color-coded by pattern type
+  - Tooltips with detailed match information
+  - Linkable HTML output for easy sharing
 
-```bash
-smarthunter ./vuln.bin        # writes ./vuln.bin_strings.html and opens it
-```
+- **Modular plugin architecture**
+  - Easily add custom decoders or pattern detectors
+  - Optimized processing pipeline
+  - JSON export for integration with other tools
 
-### Optional Flags
-
-All flags default to "smart guesses":
-
-```
--o DIR     output directory          (default: same as binary)
---json     also dump JSON metadata   (for chaining into your own tools)
---no-open  don't launch browser
---depth N  Levenshtein dist (0-5)    (default 3 – sane balance)
-```
-
-## What makes it powerful yet simple
-
-| Design choice                                         | Power                                             | Simplicity                          |
-| ----------------------------------------------------- | ------------------------------------------------- | ----------------------------------- |
-| **BK-tree clustering**                                | handles 100k+ strings in seconds                  | threshold defaulted, no user tuning |
-| **Scoring stack** (regex + entropy + rarity + length) | high-signal top-20 list                           | no flags: smart defaults            |
-| **Self-contained HTML**                               | drop into Discord/GitHub, dark-theme, search-able | auto-opens—no extra step            |
-| **Auto-JSON** (opt-in)                                | integrate into bigger pipelines                   | just `--json` if you need it        |
-| **pipx / pip install**                                | global CLI, no path juggling                      | one command to set up               |
-
-## Installation Methods
-
-### Method 1: Install with pipx (recommended)
-
-[pipx](https://github.com/pypa/pipx) installs the tool in an isolated environment:
+## 📦 Quick Installation
 
 ```bash
-# Install pipx if needed
-python -m pip install --upgrade pip pipx
-pipx ensurepath
+# Install from PyPI
+pip install smarthunter
 
-# Install smarthunter
-pipx install "smarthunter @ git+https://github.com/ellE961/smarthunter.git"
+# Or with pipx (recommended for CLI tools)
+pipx install smarthunter
 ```
 
-### Method 2: Install with pip
+Dependencies (`python-Levenshtein`, `jinja2`, `rich`, `tqdm`) are automatically installed.
+
+## 🚀 Usage
+
+### Basic Command
 
 ```bash
-python -m pip install "smarthunter @ git+https://github.com/ellE961/smarthunter.git"
+smarthunter ./binary_file
 ```
 
-### Method 3: Manual installation
+This will analyze the file, extract and decode strings, cluster similar ones, and open an HTML report in your browser.
+
+### Available Options
+
+```
+smarthunter <binary> [options]
+
+Options:
+  -o DIR, --out DIR     Output directory (default: same as binary)
+  --depth N             Nested decode depth (default: 2)
+  --stride N, --lev N   Levenshtein cluster distance (default: 3)
+  --budget N            Maximum strings to process (default: 100,000)
+  --json                Also generate JSON metadata
+  --no-open             Don't open browser automatically
+```
+
+### Try with Demo
+
+A demo binary with encoded flags and patterns is included:
 
 ```bash
+# Get the repo with demo files
 git clone https://github.com/ellE961/smarthunter.git
 cd smarthunter
-pip install -e .
+
+# Run on the demo (or create your own with create_demo.py)
+smarthunter demo_hunter.bin
 ```
 
-## How it works
+## 🧩 Supported Formats {#supported-formats}
 
-1. **String extraction**:
-   - ASCII strings (4+ printable chars)
-   - UTF-16 strings
-   - Raw section dump analysis via `objdump`
+### String Extraction
 
-2. **Clustering with BK-trees**:
+- Plain ASCII (4+ printable chars)
+- UTF-16 (wide-char strings)
+- Binary section extraction via `objdump`
+
+### Decoders
+
+| Category | Formats |
+|----------|---------|
+| **Base-x** | Base64, Base32, Base85, Base58, Base62 |
+| **Text Encoding** | URL-encoding, Hex, Octal, Binary, Decimal |
+| **Simple Ciphers** | ROT1-25 (Caesar), XOR with common keys |
+| **Special Formats** | Morse code, Braille |
+| **Compression** | Gzip, Zlib, BZ2, XZ/LZMA |
+
+### Pattern Detection
+
+| Category | Patterns |
+|----------|----------|
+| **Security** | Passwords, API keys, Tokens |
+| **CTF** | Flag formats (`flag{...}`) |
+| **Network** | IP addresses, Email addresses, URLs |
+| **Crypto** | Bitcoin/Ethereum addresses, MD5/SHA hashes |
+| **Identifiers** | UUIDs, GUIDs |
+
+## 🔍 How It Works
+
+1. **String Extraction**:
+   - Pulls ASCII and UTF-16 strings directly from binary
+   - Extracts strings from disassembled sections (via `objdump -s`)
+
+2. **Recursive Decoding**:
+   - For each extracted string, tries all registered decoders
+   - Decoded outputs become inputs for next iteration
+   - Continues to configured depth or budget
+
+3. **Pattern Recognition**:
+   - Scans all strings for registered patterns
+   - Assigns pattern-specific scores and categorizes findings
+
+4. **Intelligent Clustering**:
    - Groups similar strings using Levenshtein distance
-   - Fast even with tens of thousands of strings
+   - Uses BK-tree algorithm for efficient processing
+   - Prevents duplicate "noise" in the output
 
-3. **Intelligent scoring**:
-   - Flag pattern detection
-   - Shannon entropy calculation
-   - String length consideration
+5. **Dynamic Scoring**:
+   - Pattern-based scoring (flags, credentials, etc.)
+   - Shannon entropy analysis
+   - String length evaluation
    - Rarity/uniqueness factor
 
-4. **Output generation**:
-   - Clean, searchable HTML report
-   - Optional JSON export for scripting
-   - Auto-opens in browser
+6. **Interactive Report**:
+   - Color-coded by type for quick visual scanning
+   - Tooltips showing score components and match details
+   - Collapsible duplicates
 
-## Examples
+## 📊 Results Preview
 
-### Basic usage
-```bash
-smarthunter ./binary
+The HTML output groups strings by similarity and sorts them by importance score:
+
+```
+demo_hunter.bin – Smart-Strings report
+38 raw strings → 32 clusters. Generated 2025-05-19 09:15:22 UTC.
+
+[9.85] flag{demo_flag_for_testing}
+[9.54] flag{smart_hunter_demo}
+[9.41] [ROT13] flag{rot13_encoded_flag}
+[9.31] password=supersecret123
+1 more dupes
+[9.18] [Base64] flag{base64_encoded_flag}
+[8.76] key=ABCD1234
+[8.32] 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+...
 ```
 
-### Custom output directory
-```bash
-smarthunter ./binary -o ./reports
+Each entry shows:
+- A score in square brackets
+- Color-coded string content
+- Tooltips with detection details
+- Expandable similar strings
+
+## 🔧 Extending SmartHunter
+
+The plugin architecture makes it easy to add custom decoders and patterns. Just add new Python files to the respective directories:
+
+### Creating a Custom Decoder
+
+```python
+# smarthunter/decoders/my_decoder.py
+from ..core import decoder
+
+@decoder
+def my_custom_decoder(s: str):
+    results = []
+    # Your decoding logic here
+    # Return list of tuples: [(format_name, decoded_string), ...]
+    return results
 ```
 
-### Export JSON for further processing
-```bash
-smarthunter ./binary --json
+### Adding a New Pattern Detector
+
+```python
+# smarthunter/patterns/my_pattern.py
+from ..core import pattern
+
+# Register pattern with name and score weight
+pattern("MyPattern", 3.5)(r"regex_pattern_here")
 ```
 
-### Adjust clustering threshold
-```bash
-smarthunter ./binary --depth 2  # tighter clusters
-```
+## 🤝 Comparison with Other Tools
 
-## License
+| Feature | Smart-Strings Hunter | strings | binwalk | floss |
+|---------|---------------------|---------|---------|-------|
+| Multi-format extraction | ✅ | ❌ | ✅ | ✅ |
+| Auto-decode | ✅ | ❌ | ❌ | ✅ |
+| Pattern detection | ✅ | ❌ | ❌ | ❌ |
+| Deduplication/clustering | ✅ | ❌ | ❌ | ❌ |
+| Interactive report | ✅ | ❌ | ❌ | ❌ |
+| Plugin architecture | ✅ | ❌ | ✅ | ❌ |
 
-MIT 
+## 📝 License
+
+MIT
+
+## 🙏 Acknowledgements
+
+Special thanks to the following projects that inspired Smart-Strings Hunter:
+- The FLOSS tool from FireEye/Mandiant
+- The binwalk project
+- The strings utility 
