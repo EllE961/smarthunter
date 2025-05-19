@@ -1,0 +1,42 @@
+This is a test file for SmartHunter with various encoded strings:
+
+===== Base64 Encoded =====
+ZmxhZ3t0aGlzX2lzX2FfdGVzdF9iYXNlNjRfZmxhZ30=
+
+===== Base32 Encoded =====
+MZXW6YTBOJRGKIDVONSXE5LTOQXGG33NEBTW63LQNFZXIZLSEB2XEZLSFZ2W4Y3SPFYHI2LPNYXXIM3UPFYGKIR
+
+===== Hexadecimal Encoded =====
+73 65 63 72 65 74 5f 6d 65 73 73 61 67 65 5f 69 6e 5f 68 65 78 5f 66 6f 72 6d 61 74
+
+===== URL Encoded =====
+%66%6c%61%67%7b%68%69%64%64%65%6e%5f%69%6e%5f%75%72%6c%5f%65%6e%63%6f%64%69%6e%67%7d
+
+===== Octal Encoded =====
+146 154 141 147 173 150 151 144 144 145 156 137 151 156 137 157 143 164 141 154
+137 146 157 162 155 141 164 175
+
+===== Decimal Encoded =====
+102 108 97 103 123 104 105 100 100 101 110 95 105 110 95 100 101 99 105 109 97 108 95 101 110 99 111 100 105 110 103 125
+
+===== UTF-16 String =====
+This is UTF-16 encoded text with a flag: flag{utf16_string_example}
+
+===== Morse Code =====
+..-. .-.. .- --. --..-- ... . -.-. .-. . - -- --- .-. ... . -.-. --- -.. .
+
+===== Braille ⠓⠊⠙⠙⠑⠝ ⠍⠑⠎⠎⠁⠛⠑ =====
+⠓⠊⠙⠙⠑⠝ ⠍⠑⠎⠎⠁⠛⠑ ⠊⠝ ⠃⠗⠁⠊⠇⠇⠑ ⠋⠕⠗⠍⠁⠞
+
+===== Base85 Encoded =====
+<~BOu!rDJs.VBQ\0TDfTZ)Ch4_b~>
+
+===== Hidden In Plain Text =====
+Tfhlaisg {ihsi dhidden_ifno prlgaiisn ttehxst} message has spaces between
+characters but only some form the actual hidden text.
+
+===== ASCII Text =====
+Clear text with flag{this_is_plaintext_flag} inside.
+
+===== Multiple flags in one file =====
+Also includes CTF{another_example_flag} and key{third_example_key}. 
