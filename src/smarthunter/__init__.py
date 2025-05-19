@@ -1,6 +1,6 @@
 """SmartHunter - A tool to find encoded strings in binary files."""
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 from .main import scan_file
 

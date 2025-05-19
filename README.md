@@ -1,7 +1,7 @@
 # SmartHunter 🔍
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI version](https://img.shields.io/badge/pypi-v1.0.0-blue.svg)](https://pypi.org/project/smarthunter/)
+[![PyPI version](https://img.shields.io/badge/pypi-v1.0.1-blue.svg)](https://pypi.org/project/smarthunter/)
 [![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11-blue)](https://pypi.org/project/smarthunter/)
 
 **SmartHunter** is a high-performance tool designed to scan binaries, firmware, and any byte source for hidden strings and flags in multiple encoding formats. Built with CTF competitions and security research in mind, it features intelligent string detection, automatic flag pattern recognition, and scoring mechanisms.
@@ -83,6 +83,12 @@ smarthunter sample.bin --min 6 --max 120
 
 # Export results to JSON for further analysis
 smarthunter sample.bin --out results.json
+
+# Directly decode an encoded string (new in v1.0.1)
+smarthunter --decode "%66%6c%61%67%7b%68%69%64%64%65%6e%5f%69%6e%5f%75%72%6c%5f%65%6e%63%6f%64%69%6e%67%7d"
+
+# Decode hex string directly
+smarthunter --decode "73 65 63 72 65 74 5f 6d 65 73 73 61 67 65 5f 69 6e 5f 68 65 78 5f 66 6f 72 6d 61 74"
 ```
 
 ### Command-Line Options
@@ -94,6 +100,7 @@ smarthunter sample.bin --out results.json
 | `--min INT`         | Minimum length of decoded string (default: 4)    |
 | `--max INT`         | Maximum length of decoded string (default: 120)  |
 | `--out FILE`        | Save results to JSON file                        |
+| `--decode`          | Decode string directly instead of scanning file  |
 
 ## 💻 Python API
 
@@ -141,6 +148,19 @@ smarthunter firmware.bin --min 8 --threshold 0.6 --out firmware_secrets.json
 ```bash
 # Check if a text file contains hidden messages
 smarthunter steg_message.txt --threshold 0.7
+```
+
+### Direct Decoding of Encoded Strings
+
+```bash
+# Decode URL-encoded string
+smarthunter --decode "%66%6c%61%67%7b%68%69%64%64%65%6e%5f%69%6e%5f%75%72%6c%5f%65%6e%63%6f%64%69%6e%67%7d"
+
+# Decode hexadecimal string
+smarthunter --decode "73 65 63 72 65 74 5f 6d 65 73 73 61 67 65"
+
+# Decode Base64 string
+smarthunter --decode "ZmxhZ3t0aGlzX2lzX2JhcTY0X2VuY29kZWRfZmxhZ30="
 ```
 
 ## 🔧 How It Works

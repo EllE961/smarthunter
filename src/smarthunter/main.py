@@ -93,6 +93,176 @@ def looks_like_flag(text):
     
     return False
 
+def decode_string(input_str):
+    """Attempt to decode a string using various encoding formats."""
+    results = []
+    
+    # Convert to bytes if it's a string
+    if isinstance(input_str, str):
+        input_bytes = input_str.encode()
+    else:
+        input_bytes = input_str
+    
+    # 1. URL Encoding
+    if b'%' in input_bytes and re.search(rb'%[0-9A-Fa-f]{2}', input_bytes):
+        try:
+            decoded = unquote_to_bytes(input_bytes)
+            if is_valid_ascii(decoded):
+                text = decoded.decode(errors='ignore')
+                results.append({
+                    'codec': 'url',
+                    'text': text,
+                    'score': 0.9 + (0.1 if looks_like_flag(text) else 0)
+                })
+        except Exception:
+            pass
+    
+    # 2. Hexadecimal
+    if re.match(rb'^([0-9A-Fa-f]{2}\s*)+$', input_bytes):
+        try:
+            raw = b''.join(input_bytes.split())  # Remove whitespace
+            if len(raw) % 2 == 0:
+                decoded = binascii.unhexlify(raw)
+                if is_valid_ascii(decoded):
+                    text = decoded.decode(errors='ignore')
+                    results.append({
+                        'codec': 'hex',
+                        'text': text,
+                        'score': 0.9 + (0.1 if looks_like_flag(text) else 0)
+                    })
+        except Exception:
+            pass
+    
+    # 3. Base64 Standard
+    if re.match(rb'^[A-Za-z0-9+/]*={0,2}$', input_bytes):
+        try:
+            # Ensure proper padding
+            padding = 4 - (len(input_bytes) % 4)
+            if padding < 4:
+                padded = input_bytes + b'=' * padding
+            else:
+                padded = input_bytes
+            
+            decoded = base64.b64decode(padded)
+            if is_valid_ascii(decoded):
+                text = decoded.decode(errors='ignore')
+                results.append({
+                    'codec': 'base64',
+                    'text': text,
+                    'score': 0.9 + (0.1 if looks_like_flag(text) else 0)
+                })
+        except Exception:
+            pass
+    
+    # 4. Base64 URL-safe
+    if re.match(rb'^[A-Za-z0-9\-_]*={0,2}$', input_bytes):
+        try:
+            # Ensure proper padding
+            padding = 4 - (len(input_bytes) % 4)
+            if padding < 4:
+                padded = input_bytes + b'=' * padding
+            else:
+                padded = input_bytes
+                
+            decoded = base64.urlsafe_b64decode(padded)
+            if is_valid_ascii(decoded):
+                text = decoded.decode(errors='ignore')
+                results.append({
+                    'codec': 'base64url',
+                    'text': text,
+                    'score': 0.9 + (0.1 if looks_like_flag(text) else 0)
+                })
+        except Exception:
+            pass
+    
+    # 5. Base32
+    if re.match(rb'^[A-Z2-7]*={0,6}$', input_bytes):
+        try:
+            # Ensure proper padding
+            padding = 8 - (len(input_bytes) % 8)
+            if padding < 8:
+                padded = input_bytes + b'=' * padding
+            else:
+                padded = input_bytes
+                
+            decoded = base64.b32decode(padded)
+            if is_valid_ascii(decoded):
+                text = decoded.decode(errors='ignore')
+                results.append({
+                    'codec': 'base32',
+                    'text': text,
+                    'score': 0.9 + (0.1 if looks_like_flag(text) else 0)
+                })
+        except Exception:
+            pass
+    
+    # 6. Base85
+    try:
+        decoded = base64.a85decode(input_bytes)
+        if is_valid_ascii(decoded):
+            text = decoded.decode(errors='ignore')
+            results.append({
+                'codec': 'base85',
+                'text': text,
+                'score': 0.9 + (0.1 if looks_like_flag(text) else 0)
+            })
+    except Exception:
+        pass
+    
+    # 7. Octal
+    if re.match(rb'^([0-7]{3}\s*)+$', input_bytes):
+        try:
+            parts = re.findall(rb'[0-7]{3}', input_bytes)
+            decoded = bytes([int(part, 8) for part in parts])
+            if is_valid_ascii(decoded):
+                text = decoded.decode(errors='ignore')
+                results.append({
+                    'codec': 'octal',
+                    'text': text,
+                    'score': 0.9 + (0.1 if looks_like_flag(text) else 0)
+                })
+        except Exception:
+            pass
+    
+    # 8. Decimal
+    if re.match(rb'^(\d{1,3}\s+)+\d{1,3}$', input_bytes):
+        try:
+            nums = [int(x) for x in input_bytes.split()]
+            if all(0 <= n <= 255 for n in nums):
+                decoded = bytes(nums)
+                if is_valid_ascii(decoded):
+                    text = decoded.decode(errors='ignore')
+                    results.append({
+                        'codec': 'decimal',
+                        'text': text,
+                        'score': 0.9 + (0.1 if looks_like_flag(text) else 0)
+                    })
+        except Exception:
+            pass
+    
+    # 9. Morse Code
+    if re.match(rb'^[.-]{1,5}(\s+[.-]{1,5})*$', input_bytes):
+        try:
+            morse_text = input_bytes.decode('ascii', errors='ignore')
+            decoded = ''
+            for symbol in morse_text.split():
+                if symbol in MORSE_CODE:
+                    decoded += MORSE_CODE[symbol]
+            
+            if decoded and is_valid_ascii(decoded):
+                results.append({
+                    'codec': 'morse',
+                    'text': decoded,
+                    'score': 0.9 + (0.1 if looks_like_flag(decoded) else 0)
+                })
+        except Exception:
+            pass
+    
+    # Sort by score
+    results.sort(key=lambda x: -x['score'])
+    
+    return results
+
 def scan_file(path, min_len=4, max_len=120):
     """Scan a file for encoded strings."""
     results = []
@@ -389,22 +559,51 @@ def print_results(results, threshold=0):
     # Simple console output that works everywhere
     for result in results:
         if result['score'] >= threshold:
-            print(f"{result['offset']:08x} [{result['codec']}] (score: {result['score']:.2f}) {result['text']!r}")
+            if 'offset' in result:
+                print(f"{result['offset']:08x} [{result['codec']}] (score: {result['score']:.2f}) {result['text']!r}")
+            else:
+                print(f"[{result['codec']}] (score: {result['score']:.2f}) {result['text']!r}")
 
 def main():
     parser = argparse.ArgumentParser(description="SmartHunter - Find encoded strings in binary files")
-    parser.add_argument("file", type=str, help="File to scan")
+    parser.add_argument("input", type=str, help="File to scan or string to decode")
     parser.add_argument("--min", type=int, default=4, help="Minimum length of decoded string (default: 4)")
     parser.add_argument("--max", type=int, default=120, help="Maximum length of decoded string (default: 120)")
     parser.add_argument("--out", type=str, help="Output file for JSON results")
     parser.add_argument("--clean", action="store_true", help="Clean output mode (only high-confidence strings)")
     parser.add_argument("--threshold", type=float, default=0.0, help="Minimum confidence score (0.0-1.0)")
+    parser.add_argument("--decode", action="store_true", help="Decode string directly instead of scanning a file")
     
     args = parser.parse_args()
     
-    file_path = Path(args.file)
+    # Direct decoding mode
+    if args.decode:
+        input_str = args.input
+        print(f"Attempting to decode: {input_str}")
+        results = decode_string(input_str)
+        
+        if not results:
+            print("No valid decodings found for the input string.")
+            return 1
+        
+        threshold = 0.0  # Always show all results for direct decoding
+        print(f"Found {len(results)} possible interpretations:")
+        print_results(results, threshold)
+        
+        if args.out:
+            out_path = Path(args.out)
+            out_path.write_text(json.dumps(results, indent=2))
+            if RICH_AVAILABLE:
+                print(f"[bold cyan]Saved → {out_path}[/]")
+            else:
+                print(f"Saved → {out_path}")
+        
+        return 0
+    
+    # File scanning mode
+    file_path = Path(args.input)
     if not file_path.exists():
-        print(f"Error: File '{args.file}' not found")
+        print(f"Error: File '{args.input}' not found")
         return 1
     
     print(f"Scanning {file_path}...")
