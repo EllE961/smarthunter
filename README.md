@@ -1,7 +1,7 @@
 # Smart-Strings Hunter
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.0-blue.svg" alt="Version 0.2.0">
+  <img src="https://img.shields.io/badge/version-0.3.0-blue.svg" alt="Version 0.3.0">
   <img src="https://img.shields.io/badge/python-3.9%2B-green.svg" alt="Python 3.9+">
   <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg" alt="License: MIT">
 </p>
@@ -11,21 +11,25 @@
 ## ✨ Key Features
 
 - **Multi-format string extraction and decoding**
+
   - ASCII, UTF-16, Base64, Hex, and [15+ more encodings](#supported-formats)
   - Recursive decoding with configurable depth
   - Automatically tries various decoders and ciphers
 
 - **Intelligent pattern recognition**
+
   - Flags, credentials, email addresses, URLs, IP addresses
   - Cryptocurrency addresses (BTC, ETH)
   - Hashes, UUIDs, and other identifiers
 
 - **Advanced clustering and scoring**
+
   - Fast BK-tree Levenshtein clustering (handles 100k+ strings)
   - Multi-factor scoring (entropy, patterns, rarity, length)
   - One-click collapsible duplicates
 
 - **Beautiful interactive reports**
+
   - Color-coded by pattern type
   - Tooltips with detailed match information
   - Linkable HTML output for easy sharing
@@ -94,45 +98,50 @@ smarthunter demo_hunter.bin
 
 ### Decoders
 
-| Category | Formats |
-|----------|---------|
-| **Base-x** | Base64, Base32, Base85, Base58, Base62 |
-| **Text Encoding** | URL-encoding, Hex, Octal, Binary, Decimal |
-| **Simple Ciphers** | ROT1-25 (Caesar), XOR with common keys |
-| **Special Formats** | Morse code, Braille |
-| **Compression** | Gzip, Zlib, BZ2, XZ/LZMA |
+| Category            | Formats                                   |
+| ------------------- | ----------------------------------------- |
+| **Base-x**          | Base64, Base32, Base85, Base58, Base62    |
+| **Text Encoding**   | URL-encoding, Hex, Octal, Binary, Decimal |
+| **Simple Ciphers**  | ROT1-25 (Caesar), XOR with common keys    |
+| **Special Formats** | Morse code, Braille                       |
+| **Compression**     | Gzip, Zlib, BZ2, XZ/LZMA                  |
 
 ### Pattern Detection
 
-| Category | Patterns |
-|----------|----------|
-| **Security** | Passwords, API keys, Tokens |
-| **CTF** | Flag formats (`flag{...}`) |
-| **Network** | IP addresses, Email addresses, URLs |
-| **Crypto** | Bitcoin/Ethereum addresses, MD5/SHA hashes |
-| **Identifiers** | UUIDs, GUIDs |
+| Category        | Patterns                                   |
+| --------------- | ------------------------------------------ |
+| **Security**    | Passwords, API keys, Tokens                |
+| **CTF**         | Flag formats (`flag{...}`)                 |
+| **Network**     | IP addresses, Email addresses, URLs        |
+| **Crypto**      | Bitcoin/Ethereum addresses, MD5/SHA hashes |
+| **Identifiers** | UUIDs, GUIDs                               |
 
 ## 🔍 How It Works
 
 1. **String Extraction**:
+
    - Pulls ASCII and UTF-16 strings directly from binary
    - Extracts strings from disassembled sections (via `objdump -s`)
 
 2. **Recursive Decoding**:
+
    - For each extracted string, tries all registered decoders
    - Decoded outputs become inputs for next iteration
    - Continues to configured depth or budget
 
 3. **Pattern Recognition**:
+
    - Scans all strings for registered patterns
    - Assigns pattern-specific scores and categorizes findings
 
 4. **Intelligent Clustering**:
+
    - Groups similar strings using Levenshtein distance
    - Uses BK-tree algorithm for efficient processing
    - Prevents duplicate "noise" in the output
 
 5. **Dynamic Scoring**:
+
    - Pattern-based scoring (flags, credentials, etc.)
    - Shannon entropy analysis
    - String length evaluation
@@ -163,6 +172,7 @@ demo_hunter.bin – Smart-Strings report
 ```
 
 Each entry shows:
+
 - A score in square brackets
 - Color-coded string content
 - Tooltips with detection details
@@ -198,14 +208,14 @@ pattern("MyPattern", 3.5)(r"regex_pattern_here")
 
 ## 🤝 Comparison with Other Tools
 
-| Feature | Smart-Strings Hunter | strings | binwalk | floss |
-|---------|---------------------|---------|---------|-------|
-| Multi-format extraction | ✅ | ❌ | ✅ | ✅ |
-| Auto-decode | ✅ | ❌ | ❌ | ✅ |
-| Pattern detection | ✅ | ❌ | ❌ | ❌ |
-| Deduplication/clustering | ✅ | ❌ | ❌ | ❌ |
-| Interactive report | ✅ | ❌ | ❌ | ❌ |
-| Plugin architecture | ✅ | ❌ | ✅ | ❌ |
+| Feature                  | Smart-Strings Hunter | strings | binwalk | floss |
+| ------------------------ | -------------------- | ------- | ------- | ----- |
+| Multi-format extraction  | ✅                   | ❌      | ✅      | ✅    |
+| Auto-decode              | ✅                   | ❌      | ❌      | ✅    |
+| Pattern detection        | ✅                   | ❌      | ❌      | ❌    |
+| Deduplication/clustering | ✅                   | ❌      | ❌      | ❌    |
+| Interactive report       | ✅                   | ❌      | ❌      | ❌    |
+| Plugin architecture      | ✅                   | ❌      | ✅      | ❌    |
 
 ## 📝 License
 
@@ -214,6 +224,7 @@ MIT
 ## 🙏 Acknowledgements
 
 Special thanks to the following projects that inspired Smart-Strings Hunter:
+
 - The FLOSS tool from FireEye/Mandiant
 - The binwalk project
-- The strings utility 
+- The strings utility
