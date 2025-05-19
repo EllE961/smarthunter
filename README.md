@@ -1,230 +1,177 @@
-# Smart-Strings Hunter
+# SmartHunter 🔍
 
-<p align="center">
-  <img src="https://img.shields.io/badge/version-0.3.0-blue.svg" alt="Version 0.3.0">
-  <img src="https://img.shields.io/badge/python-3.9%2B-green.svg" alt="Python 3.9+">
-  <img src="https://img.shields.io/badge/license-MIT-lightgrey.svg" alt="License: MIT">
-</p>
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://img.shields.io/badge/pypi-v0.1.0-blue.svg)](https://pypi.org/project/smarthunter/)
+[![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11-blue)](https://pypi.org/project/smarthunter/)
 
-**Smart-Strings Hunter** is a powerful binary string analysis tool designed for CTF challenges, reverse engineering, and forensic analysis. It goes far beyond standard string extraction tools by automatically decoding various encodings, clustering similar strings, detecting patterns, and generating interactive HTML reports.
+**SmartHunter** is a high-performance tool designed to scan binaries, firmware, and any byte source for hidden strings and flags in multiple encoding formats. Built with CTF competitions and security research in mind, it features intelligent string detection, automatic flag pattern recognition, and scoring mechanisms.
 
-## ✨ Key Features
+```
+00002345 [base64] (score: 0.95) 'flag{h1dd3n_1n_pl41n_s1ght}'
+000047A9 [hex] (score: 0.85) 'secret_key_found_in_binary'
+0000F5C8 [base32] (score: 0.80) 'CTF{d3c0d3_m3_1f_y0u_c4n}'
+```
 
-- **Multi-format string extraction and decoding**
+## ✨ Features
 
-  - ASCII, UTF-16, Base64, Hex, and [15+ more encodings](#supported-formats)
-  - Recursive decoding with configurable depth
-  - Automatically tries various decoders and ciphers
+- **Multi-Encoding Support**: Detect strings in 13 different encoding formats:
+  - Base64 (Standard and URL-safe)
+  - Base32
+  - Base85
+  - Hexadecimal
+  - URL encoding (%XX)
+  - Octal
+  - Decimal
+  - UTF-16 (both endianness)
+  - Morse code
+  - Braille
+  - BaseXX (hidden flags in text)
+  - Cleartext (ASCII)
 
-- **Intelligent pattern recognition**
+- **Smart Detection**:
+  - Confidence scoring algorithm
+  - Automatic flag pattern boosting (`flag{}`, `CTF{}`, etc.)
+  - Deduplication of results
+  - Configurable thresholds
 
-  - Flags, credentials, email addresses, URLs, IP addresses
-  - Cryptocurrency addresses (BTC, ETH)
-  - Hashes, UUIDs, and other identifiers
+- **Performance Optimized**:
+  - Efficient regular expressions
+  - Fast byte manipulation
+  - Memory-mapped file access for large binaries
 
-- **Advanced clustering and scoring**
+- **Flexible Output**:
+  - Clean mode for high-confidence results only
+  - Adjustable confidence threshold
+  - Customizable min/max length filtering
+  - JSON export for further analysis
 
-  - Fast BK-tree Levenshtein clustering (handles 100k+ strings)
-  - Multi-factor scoring (entropy, patterns, rarity, length)
-  - One-click collapsible duplicates
+## 🚀 Installation
 
-- **Beautiful interactive reports**
-
-  - Color-coded by pattern type
-  - Tooltips with detailed match information
-  - Linkable HTML output for easy sharing
-
-- **Modular plugin architecture**
-  - Easily add custom decoders or pattern detectors
-  - Optimized processing pipeline
-  - JSON export for integration with other tools
-
-## 📦 Quick Installation
+### From PyPI
 
 ```bash
-# Install from PyPI
 pip install smarthunter
-
-# Or with pipx (recommended for CLI tools)
-pipx install smarthunter
 ```
 
-Dependencies (`python-Levenshtein`, `jinja2`, `rich`, `tqdm`) are automatically installed.
-
-## 🚀 Usage
-
-### Basic Command
+### From Source
 
 ```bash
-smarthunter ./binary_file
-```
-
-This will analyze the file, extract and decode strings, cluster similar ones, and open an HTML report in your browser.
-
-### Available Options
-
-```
-smarthunter <binary> [options]
-
-Options:
-  -o DIR, --out DIR     Output directory (default: same as binary)
-  --depth N             Nested decode depth (default: 2)
-  --stride N, --lev N   Levenshtein cluster distance (default: 3)
-  --budget N            Maximum strings to process (default: 100,000)
-  --json                Also generate JSON metadata
-  --no-open             Don't open browser automatically
-```
-
-### Try with Demo
-
-A demo binary with encoded flags and patterns is included:
-
-```bash
-# Get the repo with demo files
-git clone https://github.com/ellE961/smarthunter.git
+git clone https://github.com/yourname/smarthunter.git
 cd smarthunter
-
-# Run on the demo (or create your own with create_demo.py)
-smarthunter demo_hunter.bin
+pip install -e .
 ```
 
-## 🧩 Supported Formats {#supported-formats}
+## 📋 Usage
 
-### String Extraction
+### Basic Usage
 
-- Plain ASCII (4+ printable chars)
-- UTF-16 (wide-char strings)
-- Binary section extraction via `objdump`
+```bash
+# Scan a file and display all found strings
+smarthunter sample.bin
 
-### Decoders
+# Use clean mode to show only high-confidence results (score >= 0.8)
+smarthunter sample.bin --clean
 
-| Category            | Formats                                   |
-| ------------------- | ----------------------------------------- |
-| **Base-x**          | Base64, Base32, Base85, Base58, Base62    |
-| **Text Encoding**   | URL-encoding, Hex, Octal, Binary, Decimal |
-| **Simple Ciphers**  | ROT1-25 (Caesar), XOR with common keys    |
-| **Special Formats** | Morse code, Braille                       |
-| **Compression**     | Gzip, Zlib, BZ2, XZ/LZMA                  |
+# Set a custom confidence threshold (0.0-1.0)
+smarthunter sample.bin --threshold 0.7
 
-### Pattern Detection
+# Control string length filtering
+smarthunter sample.bin --min 6 --max 120
 
-| Category        | Patterns                                   |
-| --------------- | ------------------------------------------ |
-| **Security**    | Passwords, API keys, Tokens                |
-| **CTF**         | Flag formats (`flag{...}`)                 |
-| **Network**     | IP addresses, Email addresses, URLs        |
-| **Crypto**      | Bitcoin/Ethereum addresses, MD5/SHA hashes |
-| **Identifiers** | UUIDs, GUIDs                               |
-
-## 🔍 How It Works
-
-1. **String Extraction**:
-
-   - Pulls ASCII and UTF-16 strings directly from binary
-   - Extracts strings from disassembled sections (via `objdump -s`)
-
-2. **Recursive Decoding**:
-
-   - For each extracted string, tries all registered decoders
-   - Decoded outputs become inputs for next iteration
-   - Continues to configured depth or budget
-
-3. **Pattern Recognition**:
-
-   - Scans all strings for registered patterns
-   - Assigns pattern-specific scores and categorizes findings
-
-4. **Intelligent Clustering**:
-
-   - Groups similar strings using Levenshtein distance
-   - Uses BK-tree algorithm for efficient processing
-   - Prevents duplicate "noise" in the output
-
-5. **Dynamic Scoring**:
-
-   - Pattern-based scoring (flags, credentials, etc.)
-   - Shannon entropy analysis
-   - String length evaluation
-   - Rarity/uniqueness factor
-
-6. **Interactive Report**:
-   - Color-coded by type for quick visual scanning
-   - Tooltips showing score components and match details
-   - Collapsible duplicates
-
-## 📊 Results Preview
-
-The HTML output groups strings by similarity and sorts them by importance score:
-
-```
-demo_hunter.bin – Smart-Strings report
-38 raw strings → 32 clusters. Generated 2025-05-19 09:15:22 UTC.
-
-[9.85] flag{demo_flag_for_testing}
-[9.54] flag{smart_hunter_demo}
-[9.41] [ROT13] flag{rot13_encoded_flag}
-[9.31] password=supersecret123
-1 more dupes
-[9.18] [Base64] flag{base64_encoded_flag}
-[8.76] key=ABCD1234
-[8.32] 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
-...
+# Export results to JSON for further analysis
+smarthunter sample.bin --out results.json
 ```
 
-Each entry shows:
+### Command-Line Options
 
-- A score in square brackets
-- Color-coded string content
-- Tooltips with detection details
-- Expandable similar strings
+| Option | Description |
+|--------|-------------|
+| `--clean` | Show only high-confidence results (score >= 0.8) |
+| `--threshold FLOAT` | Set minimum confidence score (0.0-1.0) |
+| `--min INT` | Minimum length of decoded string (default: 4) |
+| `--max INT` | Maximum length of decoded string (default: 120) |
+| `--out FILE` | Save results to JSON file |
 
-## 🔧 Extending SmartHunter
+## 💻 Python API
 
-The plugin architecture makes it easy to add custom decoders and patterns. Just add new Python files to the respective directories:
-
-### Creating a Custom Decoder
+SmartHunter can be easily integrated into your Python projects:
 
 ```python
-# smarthunter/decoders/my_decoder.py
-from ..core import decoder
+from smarthunter import scan_file
 
-@decoder
-def my_custom_decoder(s: str):
-    results = []
-    # Your decoding logic here
-    # Return list of tuples: [(format_name, decoded_string), ...]
-    return results
+# Scan a file and process results
+results = scan_file("firmware.bin")
+
+# Results are sorted by confidence score
+for result in results:
+    print(f"Found at 0x{result['offset']:08x}: {result['text']}")
+    print(f"  Encoding: {result['codec']}")
+    print(f"  Confidence: {result['score']:.2f}")
+    
+# Filter by confidence score
+high_confidence = [r for r in results if r['score'] >= 0.8]
+
+# Find likely flags
+flags = [r for r in results if 'flag{' in r['text'].lower()]
 ```
 
-### Adding a New Pattern Detector
+## 🔍 Examples
 
-```python
-# smarthunter/patterns/my_pattern.py
-from ..core import pattern
+### Finding Hidden Flags in CTF Challenges
 
-# Register pattern with name and score weight
-pattern("MyPattern", 3.5)(r"regex_pattern_here")
+SmartHunter excels at finding hidden flags in CTF challenges:
+
+```bash
+# Scan a CTF binary and output high-confidence results
+smarthunter challenge.bin --clean
 ```
 
-## 🤝 Comparison with Other Tools
+### Analyzing Firmware for Secrets
 
-| Feature                  | Smart-Strings Hunter | strings | binwalk | floss |
-| ------------------------ | -------------------- | ------- | ------- | ----- |
-| Multi-format extraction  | ✅                   | ❌      | ✅      | ✅    |
-| Auto-decode              | ✅                   | ❌      | ❌      | ✅    |
-| Pattern detection        | ✅                   | ❌      | ❌      | ❌    |
-| Deduplication/clustering | ✅                   | ❌      | ❌      | ❌    |
-| Interactive report       | ✅                   | ❌      | ❌      | ❌    |
-| Plugin architecture      | ✅                   | ❌      | ✅      | ❌    |
+```bash
+# Search for secrets in firmware with minimum length of 8 characters
+smarthunter firmware.bin --min 8 --threshold 0.6 --out firmware_secrets.json
+```
+
+### Scanning Text Files for Steganography
+
+```bash
+# Check if a text file contains hidden messages
+smarthunter steg_message.txt --threshold 0.7
+```
+
+## 🔧 How It Works
+
+SmartHunter works by:
+
+1. Memory-mapping the target file for efficient access
+2. Applying optimized detection algorithms for each encoding format
+3. Scoring detected strings based on multiple factors:
+   - Printable character ratio
+   - Pattern matches (flags, keys, etc.)
+   - String length
+4. Filtering and deduplicating results
+5. Ranking findings by confidence score
 
 ## 📝 License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgements
+## 🤝 Contributing
 
-Special thanks to the following projects that inspired Smart-Strings Hunter:
+Contributions are welcome! Feel free to:
 
-- The FLOSS tool from FireEye/Mandiant
-- The binwalk project
-- The strings utility
+- Report bugs
+- Suggest features
+- Add new decoders
+- Improve performance
+- Submit pull requests
+
+## 📚 Acknowledgments
+
+- Inspired by CTF challenges and the need for better binary string extraction tools
+- Special thanks to the security and CTF community
+
+---
+
+Made with ❤️ for security researchers and CTF players 
