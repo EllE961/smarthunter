@@ -18,20 +18,53 @@ def _base_n(data:bytes, alphabet:bytes):
 @decoder
 def base_family(s:str):
     res=[]
-    try:
-        if len(s)%4==0 and re.fullmatch(r"[A-Za-z0-9+/=]{8,}",s):
-            res.append(("Base64",base64.b64decode(s).decode('utf-8','ignore')))
-    except: pass
-    try:
-        res.append(("Base32",base64.b32decode(s).decode('utf-8','ignore')))
-    except: pass
-    try:
-        res.append(("Base85",base64.b85decode(s).decode('utf-8','ignore')))
-    except: pass
-    if set(s.encode())<=set(BASE58):
-        out=_base_n(s.encode(),BASE58)
-        if out: res.append(("Base58",out.decode('utf-8','ignore')))
-    if set(s.encode())<=set(BASE62):
-        out=_base_n(s.encode(),BASE62)
-        if out: res.append(("Base62",out.decode('utf-8','ignore')))
+    
+    # Extract potential base64 fragments
+    b64_fragments = re.findall(r"[A-Za-z0-9+/]{8,}={0,2}", s)
+    for fragment in b64_fragments:
+        if len(fragment) % 4 == 0 or len(fragment) >= 8:
+            try:
+                decoded = base64.b64decode(fragment).decode('utf-8','ignore')
+                if len(decoded) >= 4 and decoded.isprintable():
+                    res.append(("Base64", decoded))
+            except: pass
+    
+    # Extract potential base32 fragments
+    b32_fragments = re.findall(r"[A-Z2-7]{8,}={0,6}", s)
+    for fragment in b32_fragments:
+        try:
+            decoded = base64.b32decode(fragment).decode('utf-8','ignore')
+            if len(decoded) >= 4 and decoded.isprintable():
+                res.append(("Base32", decoded))
+        except: pass
+    
+    # Extract potential base85 fragments
+    b85_fragments = re.findall(r"[A-Za-z0-9!#$%&()*+\-;<=>?@^_`{|}~]{8,}", s)
+    for fragment in b85_fragments:
+        try:
+            decoded = base64.b85decode(fragment).decode('utf-8','ignore')
+            if len(decoded) >= 4 and decoded.isprintable():
+                res.append(("Base85", decoded))
+        except: pass
+    
+    # Base58 check - take longest contiguous base58 characters
+    b58_fragment = re.search(r"[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{8,}", s)
+    if b58_fragment:
+        fragment = b58_fragment.group()
+        out = _base_n(fragment.encode(), BASE58)
+        if out: 
+            decoded = out.decode('utf-8','ignore')
+            if len(decoded) >= 4 and decoded.isprintable():
+                res.append(("Base58", decoded))
+    
+    # Base62 check
+    b62_fragment = re.search(r"[0-9A-Za-z]{8,}", s)
+    if b62_fragment:
+        fragment = b62_fragment.group()
+        out = _base_n(fragment.encode(), BASE62)
+        if out: 
+            decoded = out.decode('utf-8','ignore')
+            if len(decoded) >= 4 and decoded.isprintable():
+                res.append(("Base62", decoded))
+    
     return res 

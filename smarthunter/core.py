@@ -25,10 +25,33 @@ def pattern(name:str, score:float):
 ASCII_RE  = re.compile(rb"[\x20-\x7e]{4,}")
 UTF16_RE  = re.compile(rb"(?:[\x20-\x7e]\x00){4,}")
 
+def _clean_string(s: str) -> List[str]:
+    """Split a string on non-printable characters and remove junk."""
+    # Split the string on non-printable characters
+    parts = re.split(r'[^\x20-\x7e]', s)
+    # Filter out empty parts and parts that are too short
+    return [part for part in parts if part and len(part) >= 4]
+
 def _extract(buf: bytes) -> list[str]:
-    out=[m.group().decode('ascii','ignore') for m in ASCII_RE.finditer(buf)]
-    out+=[m.group().decode('utf-16le','ignore') for m in UTF16_RE.finditer(buf)]
-    return out
+    result = []
+    
+    # Extract ASCII strings
+    for m in ASCII_RE.finditer(buf):
+        raw_str = m.group().decode('ascii','ignore')
+        # Add the original string
+        result.append(raw_str)
+        # Also add cleaned sub-strings to catch embedded flags
+        result.extend(_clean_string(raw_str))
+    
+    # Extract UTF-16 strings
+    for m in UTF16_RE.finditer(buf):
+        raw_str = m.group().decode('utf-16le','ignore')
+        # Add the original string
+        result.append(raw_str)
+        # Also add cleaned sub-strings
+        result.extend(_clean_string(raw_str))
+    
+    return result
 
 def pull_strings(path: Path, decode_depth:int, budget:int) -> list[str]:
     data = path.read_bytes(); raw=_extract(data)

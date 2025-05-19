@@ -1,5 +1,5 @@
 from ..core import decoder
-import base64, binascii, zlib, gzip, bz2, lzma, io
+import base64, binascii, zlib, gzip, bz2, lzma, io, re
 
 MAGICS={
     b"\x1f\x8b":("gzip", gzip.decompress),
@@ -11,9 +11,14 @@ MAGICS={
 @decoder
 def compression_dec(s:str):
     outs=[]
-    try:
-        raw=base64.b64decode(s,validate=True)
-    except Exception: raw=None
+    
+    # Find the longest pure base64 fragment inside the string
+    b64match = re.search(r"[A-Za-z0-9+/]{16,}={0,2}", s)
+    raw = None
+    if b64match:
+        try: raw = base64.b64decode(b64match.group(), validate=True)
+        except Exception: pass
+    
     for label,decomp in MAGICS.values():
         src=raw if raw and raw.startswith(label.encode() if isinstance(label,str) else label) else None
         if not src and s.encode().startswith(label): src=s.encode()

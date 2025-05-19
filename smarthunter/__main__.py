@@ -332,7 +332,7 @@ def parse():
     ap=argparse.ArgumentParser(prog="smarthunter",description="Smart-Strings hunter")
     ap.add_argument("binary", help="target binary / file")
     ap.add_argument("-o","--out", help="output dir")
-    ap.add_argument("--depth",type=int,default=2, help="nested decode depth (default 2)")
+    ap.add_argument("--depth",type=int,default=3, help="nested decode depth (default 3)")
     ap.add_argument("--stride","--lev",type=int,default=3, help="Levenshtein cluster distance")
     ap.add_argument("--budget",type=int,default=100_000, help="max strings to keep")
     ap.add_argument("--json",action="store_true",help="also write JSON")

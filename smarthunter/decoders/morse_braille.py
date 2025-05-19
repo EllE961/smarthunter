@@ -11,12 +11,30 @@ BRAILLE = {0b100000:'A',0b101000:'B',0b110000:'C',0b110100:'D',0b100100:'E',0b11
 @decoder
 def morse_braille(s:str):
     out=[]
+    
+    # Standard Morse pattern with strict match
     if re.fullmatch(r"[.\- /]{6,}",s):
         try: out.append(("Morse",''.join(MORSE.get(tok,'?') for tok in s.split())))
         except: pass
+    
+    # More tolerant Morse pattern - extracts the morse portion from noise
+    morse_part = re.search(r"[.\- /]{6,}", s)
+    if morse_part and morse_part.group() != s:
+        morse_str = morse_part.group()
+        # Clean up extra spaces
+        cleaned_morse = re.sub(r"\s+", " ", morse_str.strip())
+        try: 
+            decoded = ''.join(MORSE.get(tok,'?') for tok in cleaned_morse.split())
+            # Only add if not mostly question marks
+            if decoded.count('?') < len(decoded) * 0.3:
+                out.append(("Morse-clean", decoded))
+        except: pass
+    
+    # Braille detection
     if all(0x2800<=ord(c)<=0x28FF for c in s):
         try:
             decoded=''.join(BRAILLE.get(ord(c)-0x2800,'?') for c in s)
             out.append(("Braille",decoded))
         except: pass
+    
     return out 
