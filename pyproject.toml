@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name            = "smarthunter"
-version         = "1.0.1"
+version         = "1.0.2"
 description     = "Ultra-fast flag & string hunter for mixed/Unicode encodings"
-authors         = [{ name = "EllE", email = "elle@example.com" }]
+authors         = [{ name = "EllE961", email = "yahyaalsalmi961@gmail.com" }]
 license         = { text = "MIT" }
 readme          = "README.md"
 requires-python = ">=3.9"
@@ -29,10 +29,10 @@ classifiers     = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourname/smarthunter"
-Documentation = "https://github.com/yourname/smarthunter#readme"
-Issues = "https://github.com/yourname/smarthunter/issues"
-Source = "https://github.com/yourname/smarthunter"
+Homepage = "https://github.com/EllE961/smarthunter"
+Documentation = "https://github.com/EllE961/smarthunter#readme"
+Issues = "https://github.com/EllE961/smarthunter/issues"
+Source = "https://github.com/EllE961/smarthunter"
 
 [project.scripts]
 smarthunter = "smarthunter.main:main"
