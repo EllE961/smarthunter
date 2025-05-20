@@ -1,7 +1,7 @@
 # SmartHunter 🔍
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI version](https://img.shields.io/badge/pypi-v1.0.1-blue.svg)](https://pypi.org/project/smarthunter/)
+[![PyPI version](https://img.shields.io/badge/pypi-v1.0.2-blue.svg)](https://pypi.org/project/smarthunter/)
 [![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11-blue)](https://pypi.org/project/smarthunter/)
 
 **SmartHunter** is a high-performance tool designed to scan binaries, firmware, and any byte source for hidden strings and flags in multiple encoding formats. Built with CTF competitions and security research in mind, it features intelligent string detection, automatic flag pattern recognition, and scoring mechanisms.
