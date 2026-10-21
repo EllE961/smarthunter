@@ -557,12 +557,19 @@ def print_results(results, threshold=0):
         return
     
     # Simple console output that works everywhere
+    try:
+        from rich.markup import escape
+    except ImportError:
+        def escape(s):
+            return s
+
     for result in results:
         if result['score'] >= threshold:
             if 'offset' in result:
-                print(f"{result['offset']:08x} [{result['codec']}] (score: {result['score']:.2f}) {result['text']!r}")
+                line = f"{result['offset']:08x} [{result['codec']}] (score: {result['score']:.2f}) {result['text']!r}"
             else:
-                print(f"[{result['codec']}] (score: {result['score']:.2f}) {result['text']!r}")
+                line = f"[{result['codec']}] (score: {result['score']:.2f}) {result['text']!r}"
+            print(escape(line))
 
 def main():
     parser = argparse.ArgumentParser(description="SmartHunter - Find encoded strings in binary files")

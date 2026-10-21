@@ -1,8 +1,7 @@
 include LICENSE
 include README.md
-include demo_hunter.bin
-include create_demo.py
-include pypi_instructions.md
+include test_sample.bin
+include scripts/make_sample.py
 
 recursive-include tests *
 recursive-exclude * __pycache__

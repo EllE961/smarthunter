@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name            = "smarthunter"
 version         = "1.0.2"
-description     = "Ultra-fast flag & string hunter for mixed/Unicode encodings"
+description     = "Scan files for hidden strings and flags across 11 encodings, ranked by a confidence score"
 authors         = [{ name = "EllE961", email = "yahyaalsalmi961@gmail.com" }]
 license         = { text = "MIT" }
 readme          = "README.md"
